@@ -1,65 +1,86 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { QUIZZES } from '@/data/quizzes';
+import { QuizGrid } from '@/components/QuizGrid';
+import { QuizView } from '@/components/QuizView';
 
 export default function Home() {
+  const [activeQuizId, setActiveQuizId] = useState<number | null>(null);
+  const [completedIds, setCompletedIds] = useState<number[]>([]);
+
+  const handleSelectQuiz = (id: number) => {
+    setActiveQuizId(id);
+  };
+
+  const handleBackToGrid = () => {
+    if (activeQuizId !== null) {
+      setCompletedIds((prev) => Array.from(new Set([...prev, activeQuizId])));
+      setActiveQuizId(null);
+    }
+  };
+
+  const activeQuiz = activeQuizId ? QUIZZES.find((q) => q.id === activeQuizId) : null;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="min-h-screen flex flex-col items-center justify-center p-4 md:p-8 relative overflow-hidden">
+      {/* Background ambient effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[100px]" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-center">
+        <header className="mb-8 md:mb-12 text-center space-y-2">
+          <motion.h1
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="text-4xl md:text-6xl font-black tracking-tight text-white drop-shadow-lg"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <span className="text-indigo-400">Year-End</span> Quiz
+          </motion.h1>
+          {!activeQuizId && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-slate-400 text-lg md:text-xl"
+            >
+              Select a number to reveal the question
+            </motion.p>
+          )}
+        </header>
+
+        <AnimatePresence mode="wait">
+          {activeQuiz ? (
+            <QuizView
+              key="view"
+              quiz={activeQuiz}
+              onBack={handleBackToGrid}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+          ) : (
+            <motion.div
+              key="grid"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="w-full"
+            >
+              <QuizGrid
+                quizzes={QUIZZES}
+                completedIds={completedIds}
+                onSelect={handleSelectQuiz}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <footer className="absolute bottom-4 text-slate-600 text-sm">
+        Designed for 2025 Year-End Party
+      </footer>
+    </main>
   );
 }
