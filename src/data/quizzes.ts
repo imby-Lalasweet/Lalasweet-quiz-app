@@ -4,13 +4,16 @@ export interface Quiz {
     question: string;
     answer: string;
     image?: string; // Optional image URL for image type quizzes
+    audio?: string; // Path to question audio
+    answerImage?: string; // Path to answer image
+    answerAudio?: string; // Path to answer audio
 }
 
 export const CATEGORIES = [
-    "카테고리 1",
-    "카테고리 2",
-    "카테고리 3",
-    "카테고리 4"
+    "노래",
+    "뒷면의 비밀",
+    "라라 유니버스",
+    "F&B 트렌드"
 ];
 
 // 4 categories x 4 difficulty levels = 16 quizzes
@@ -18,9 +21,15 @@ export const CATEGORIES = [
 // IDs 5-8: Category 2
 // IDs 9-12: Category 3
 // IDs 13-16: Category 4
-export const QUIZZES: Quiz[] = Array.from({ length: 16 }, (_, i) => ({
-    id: i + 1,
-    type: 'text',
-    question: `Question for Cell ${i + 1}\n(Edit me in src/data/quizzes.ts)`,
-    answer: `Answer for Cell ${i + 1}`,
-}));
+export const QUIZZES: Quiz[] = Array.from({ length: 16 }, (_, i) => {
+    const id = i + 1;
+    return {
+        id,
+        type: 'text',
+        question: `Question for Cell ${id}\n(Edit me in src/data/quizzes.ts)`,
+        answer: `Answer for Cell ${id}`,
+        audio: `/audio/q_${id}.mp3`,
+        answerImage: id === 1 ? '/images/1.png' : `/images/a_${id}.png`,
+        answerAudio: `/audio/a_${id}.mp3`,
+    };
+});

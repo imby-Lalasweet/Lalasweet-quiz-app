@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import React from 'react';
 import { Quiz } from '@/data/quizzes';
 import { cn } from '@/lib/utils';
 import { Check } from 'lucide-react';
@@ -33,7 +34,7 @@ export function QuizGrid({ quizzes, categories, completedIds, onSelect }: QuizGr
 
                 {/* Rows: Category + 4 Quizzes */}
                 {categories.map((category, rowIndex) => (
-                    <>
+                    <React.Fragment key={category}>
                         {/* Category Header */}
                         <div className="flex items-center justify-center p-4 bg-slate-900/90 rounded-xl border-l-4 border-indigo-500 shadow-xl">
                             <span className="text-xl font-bold text-white break-words w-full px-2">{category}</span>
@@ -78,7 +79,7 @@ export function QuizGrid({ quizzes, categories, completedIds, onSelect }: QuizGr
                                 </motion.button>
                             );
                         })}
-                    </>
+                    </React.Fragment>
                 ))}
             </div>
         </div>
