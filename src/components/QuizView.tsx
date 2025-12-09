@@ -11,7 +11,7 @@ interface QuizViewProps {
 }
 
 export function QuizView({ quiz, onBack }: QuizViewProps) {
-    const [audioInstance, setAudioInstance] = useState<HTMLAudioElement | null>(null);
+    const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
     const [showAudioControls, setShowAudioControls] = useState(false);
     const [showAnswer, setShowAnswer] = useState(false);
 
@@ -19,45 +19,55 @@ export function QuizView({ quiz, onBack }: QuizViewProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         return () => {
-            if (audioInstance) {
-                audioInstance.pause();
-                audioInstance.currentTime = 0;
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
             }
         };
-    }, [audioInstance, quiz.id]);
+    }, [currentAudio, quiz.id]);
 
     const playQuestionAudio = () => {
         if (!quiz.audio) return;
 
-        if (audioInstance) {
-            audioInstance.play();
-        } else {
-            const audio = new Audio(quiz.audio);
-            audio.play().catch(e => {
-                console.error("Audio play failed", e);
-                alert(`오디오 파일을 찾을 수 없습니다: ${quiz.audio}`);
-            });
-            setAudioInstance(audio);
+        // Stop any currently playing audio
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
         }
+
+        const audio = new Audio(quiz.audio);
+        audio.play().catch(e => {
+            console.error("Audio play failed", e);
+            alert(`오디오 파일을 찾을 수 없습니다: ${quiz.audio}`);
+        });
+        setCurrentAudio(audio);
         setShowAudioControls(true);
     };
 
     const pauseQuestionAudio = () => {
-        audioInstance?.pause();
+        currentAudio?.pause();
     };
 
     const replayQuestionAudio = () => {
-        if (audioInstance) {
-            audioInstance.currentTime = 0;
-            audioInstance.play();
+        if (currentAudio) {
+            currentAudio.currentTime = 0;
+            currentAudio.play();
         }
     };
 
     // Helper for answer audio (stateless for now, or unified? User asked specifically for "Problem" buttons)
     const playAnswerAudio = (path?: string) => {
         if (!path) return;
+
+        // Stop any currently playing audio
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+        }
+
         const audio = new Audio(path);
         audio.play().catch(e => console.error(e));
+        setCurrentAudio(audio);
     };
 
     return (
