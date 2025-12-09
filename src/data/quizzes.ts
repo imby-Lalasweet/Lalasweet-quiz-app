@@ -21,15 +21,34 @@ export const CATEGORIES = [
 // IDs 5-8: Category 2
 // IDs 9-12: Category 3
 // IDs 13-16: Category 4
+const ANSWERS: Record<number, string> = {
+    1: "반짝반짝\n걸스데이",
+    2: "불장난\n블랙핑크",
+    3: "I got a boy\n소녀시대",
+    4: "물음표\n프라이머리 (feat. 최자, 자이언티)",
+    5: "넛티 초코바 바닐라",
+    6: "복숭아 생요거트바",
+    7: "바닐라 저당콘",
+    8: "저당 초코범벅 팝콘",
+    9: "영상1팀 정요한",
+    10: "기획팀 아이스크림셀 조은지",
+    11: "마케팅팀 인지셀 이선민",
+    12: "CS팀 임진희",
+    13: "두바이 쫀득 쿠키",
+    14: "강민경",
+    15: "교보문고맛 크림빵",
+    16: "동결건조"
+};
+
 export const QUIZZES: Quiz[] = Array.from({ length: 16 }, (_, i) => {
     const id = i + 1;
     return {
         id,
         type: 'text',
-        question: `Question for Cell ${id}\n(Edit me in src/data/quizzes.ts)`,
-        answer: `Answer for Cell ${id}`,
-        audio: `/audio/q_${id}.mp3`,
-        answerImage: id === 1 ? '/images/1.png' : `/images/a_${id}.png`,
-        answerAudio: `/audio/a_${id}.mp3`,
+        question: `Question ${id}`,
+        answer: ANSWERS[id],
+        audio: `/Audio/q_${id}.mp3`,
+        answerImage: `/Images/${id}.png`,
+        answerAudio: id <= 4 ? `/Audio/a_${id}.mp3` : undefined,
     };
 });

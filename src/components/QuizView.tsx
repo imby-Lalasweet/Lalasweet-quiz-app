@@ -13,6 +13,7 @@ interface QuizViewProps {
 export function QuizView({ quiz, onBack }: QuizViewProps) {
     const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
     const [showAudioControls, setShowAudioControls] = useState(false);
+    const [isPaused, setIsPaused] = useState(false);
     const [showAnswer, setShowAnswer] = useState(false);
 
     // Cleanup audio on unmount or id change
@@ -41,17 +42,27 @@ export function QuizView({ quiz, onBack }: QuizViewProps) {
             alert(`오디오 파일을 찾을 수 없습니다: ${quiz.audio}`);
         });
         setCurrentAudio(audio);
+        setIsPaused(false);
         setShowAudioControls(true);
     };
 
-    const pauseQuestionAudio = () => {
-        currentAudio?.pause();
+    const toggleAudio = () => {
+        if (!currentAudio) return;
+
+        if (isPaused) {
+            currentAudio.play();
+            setIsPaused(false);
+        } else {
+            currentAudio.pause();
+            setIsPaused(true);
+        }
     };
 
     const replayQuestionAudio = () => {
         if (currentAudio) {
             currentAudio.currentTime = 0;
             currentAudio.play();
+            setIsPaused(false);
         }
     };
 
@@ -68,6 +79,7 @@ export function QuizView({ quiz, onBack }: QuizViewProps) {
         const audio = new Audio(path);
         audio.play().catch(e => console.error(e));
         setCurrentAudio(audio);
+        setIsPaused(false);
     };
 
     return (
@@ -118,16 +130,19 @@ export function QuizView({ quiz, onBack }: QuizViewProps) {
                                             className="flex gap-4"
                                         >
                                             <button
-                                                onClick={pauseQuestionAudio}
-                                                className="flex items-center gap-2 px-6 py-3 rounded-full bg-amber-500 hover:bg-amber-400 text-white font-bold text-lg shadow-lg hover:-translate-y-1 transition-all"
+                                                onClick={toggleAudio}
+                                                className={`flex items-center gap-2 px-6 py-3 rounded-full text-white font-bold text-lg shadow-lg hover:-translate-y-1 transition-all ${isPaused
+                                                    ? 'bg-emerald-500 hover:bg-emerald-400'
+                                                    : 'bg-amber-500 hover:bg-amber-400'
+                                                    }`}
                                             >
-                                                <span>⏸ 일시 정지</span>
+                                                <span>{isPaused ? '▶ 이어 듣기' : '⏸ 일시 정지'}</span>
                                             </button>
                                             <button
                                                 onClick={replayQuestionAudio}
                                                 className="flex items-center gap-2 px-6 py-3 rounded-full bg-blue-500 hover:bg-blue-400 text-white font-bold text-lg shadow-lg hover:-translate-y-1 transition-all"
                                             >
-                                                <span>🔄 다시 듣기</span>
+                                                <span>🔄 처음부터 듣기</span>
                                             </button>
                                         </motion.div>
                                     )}
@@ -155,26 +170,35 @@ export function QuizView({ quiz, onBack }: QuizViewProps) {
                                     exit={{ opacity: 0, scale: 0.9 }}
                                     className="bg-emerald-900/30 border border-emerald-500/30 rounded-xl p-6 flex flex-col items-center gap-4"
                                 >
-                                    <p className="text-emerald-400 font-bold text-xl md:text-2xl">
+                                    <p className="text-emerald-400 font-bold text-xl md:text-2xl whitespace-pre-line text-center">
                                         {quiz.answer}
                                     </p>
 
-                                    {/* Answer Image - Click to play audio */}
+                                    {/* Answer Image - Click to play audio if available */}
                                     {quiz.answerImage && (
-                                        /* eslint-disable-next-line @next/next/no-img-element */
-                                        <button
-                                            onClick={() => playAnswerAudio(quiz.answerAudio)}
-                                            className="group relative rounded-xl overflow-hidden border-4 border-emerald-500/50 hover:border-emerald-400 transition-colors shadow-2xl cursor-pointer"
-                                        >
-                                            <img
-                                                src={quiz.answerImage}
-                                                alt="Answer"
-                                                className="max-h-80 w-auto object-contain bg-black/20"
-                                            />
-                                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <Play size={64} className="text-white fill-white drop-shadow-lg" />
+                                        quiz.answerAudio ? (
+                                            <button
+                                                onClick={() => playAnswerAudio(quiz.answerAudio)}
+                                                className="group relative rounded-xl overflow-hidden border-4 border-emerald-500/50 hover:border-emerald-400 transition-colors shadow-2xl cursor-pointer"
+                                            >
+                                                <img
+                                                    src={quiz.answerImage}
+                                                    alt="Answer"
+                                                    className="max-h-80 w-auto object-contain bg-black/20"
+                                                />
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <Play size={64} className="text-white fill-white drop-shadow-lg" />
+                                                </div>
+                                            </button>
+                                        ) : (
+                                            <div className="rounded-xl overflow-hidden border-4 border-emerald-500/50 shadow-2xl">
+                                                <img
+                                                    src={quiz.answerImage}
+                                                    alt="Answer"
+                                                    className="max-h-80 w-auto object-contain bg-black/20"
+                                                />
                                             </div>
-                                        </button>
+                                        )
                                     )}
                                     {quiz.answerAudio && !quiz.answerImage && (
                                         <button

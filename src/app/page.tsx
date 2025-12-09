@@ -45,7 +45,7 @@ export default function Home() {
               className="h-6 md:h-10 w-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
             />
             <h1 className="text-2xl md:text-4xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-white to-purple-200 drop-shadow-2xl whitespace-nowrap">
-              ae찬홍의 설명을 맞춰라!
+              AI 낭독 퀴즈
             </h1>
           </motion.div>
 
