@@ -296,8 +296,7 @@ export function QuizView({ quiz, onBack }: QuizViewProps) {
                                     <img
                                         src={quiz.answerImage}
                                         alt="Zoomed Answer"
-                                        className="object-contain rounded-lg shadow-2xl"
-                                        style={{ transform: 'scale(1.25)', transformOrigin: 'center' }}
+                                        className="max-w-[95vw] max-h-[90vh] w-auto h-auto object-contain rounded-lg shadow-2xl"
                                     />
                                 </motion.div>
                             </div>
