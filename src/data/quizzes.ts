@@ -47,8 +47,8 @@ export const QUIZZES: Quiz[] = Array.from({ length: 16 }, (_, i) => {
         type: 'text',
         question: `Question ${id}`,
         answer: ANSWERS[id],
-        audio: `/Audio/q_${id}.mp3`,
-        answerImage: `/Images/${id}.png`,
-        answerAudio: id <= 4 ? `/Audio/a_${id}.mp3` : undefined,
+        audio: `/audio/q_${id}.mp3`,
+        answerImage: `/images/${id}.png`,
+        answerAudio: id <= 4 ? `/audio/a_${id}.mp3` : undefined,
     };
 });
