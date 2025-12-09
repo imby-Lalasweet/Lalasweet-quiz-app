@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Quiz } from '@/data/quizzes';
-import { ArrowLeft, Eye, EyeOff, Play, Volume2 } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Play, Volume2, X } from 'lucide-react';
 
 interface QuizViewProps {
     quiz: Quiz;
@@ -15,6 +15,7 @@ export function QuizView({ quiz, onBack }: QuizViewProps) {
     const [showAudioControls, setShowAudioControls] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const [showAnswer, setShowAnswer] = useState(false);
+    const [isZoomed, setIsZoomed] = useState(false);
 
     // Cleanup audio on unmount or id change
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -81,6 +82,8 @@ export function QuizView({ quiz, onBack }: QuizViewProps) {
         setCurrentAudio(audio);
         setIsPaused(false);
     };
+
+    const isZoomable = quiz.id >= 5 && quiz.id <= 8;
 
     return (
         <motion.div
@@ -190,6 +193,20 @@ export function QuizView({ quiz, onBack }: QuizViewProps) {
                                                     <Play size={64} className="text-white fill-white drop-shadow-lg" />
                                                 </div>
                                             </button>
+                                        ) : isZoomable ? (
+                                            <button
+                                                onClick={() => setIsZoomed(true)}
+                                                className="group relative rounded-xl overflow-hidden border-4 border-emerald-500/50 hover:border-emerald-400 transition-colors shadow-2xl cursor-pointer"
+                                            >
+                                                <img
+                                                    src={quiz.answerImage}
+                                                    alt="Answer"
+                                                    className="max-h-80 w-auto object-contain bg-black/20 transition-transform group-hover:scale-105"
+                                                />
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <span className="text-white font-bold bg-black/50 px-4 py-2 rounded-full border border-white/50">🔍 확대하기</span>
+                                                </div>
+                                            </button>
                                         ) : (
                                             <div className="rounded-xl overflow-hidden border-4 border-emerald-500/50 shadow-2xl">
                                                 <img
@@ -245,6 +262,49 @@ export function QuizView({ quiz, onBack }: QuizViewProps) {
                 </div>
                 <span className="text-lg">점수판으로 돌아가기</span>
             </motion.button>
+
+            {/* Image Zoom Modal */}
+            <AnimatePresence>
+                {isZoomed && quiz.answerImage && (
+                    <>
+                        {/* Fixed X button - separate from scrollable area */}
+                        <motion.button
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed top-8 right-8 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-[120]"
+                            onClick={() => setIsZoomed(false)}
+                        >
+                            <X size={40} />
+                        </motion.button>
+
+                        {/* Scrollable image container */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm overflow-auto"
+                            onClick={() => setIsZoomed(false)}
+                        >
+                            <div className="min-h-full min-w-full flex items-center justify-center p-20">
+                                <motion.div
+                                    initial={{ scale: 0.5 }}
+                                    animate={{ scale: 1 }}
+                                    exit={{ scale: 0.5 }}
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <img
+                                        src={quiz.answerImage}
+                                        alt="Zoomed Answer"
+                                        className="object-contain rounded-lg shadow-2xl"
+                                        style={{ transform: 'scale(1.25)', transformOrigin: 'center' }}
+                                    />
+                                </motion.div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 }
