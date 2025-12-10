@@ -22,10 +22,10 @@ export const CATEGORIES = [
 // IDs 9-12: Category 3
 // IDs 13-16: Category 4
 const ANSWERS: Record<number, string> = {
-    1: "반짝반짝\n걸스데이",
+    1: "붉은 노을\n빅뱅",
     2: "불장난\n블랙핑크",
     3: "I got a boy\n소녀시대",
-    4: "물음표\n프라이머리 (feat. 최자, 자이언티)",
+    4: "비밀의 화원\n아이유 (or 이상은)",
     5: "넛티 초코바 바닐라",
     6: "복숭아 생요거트바",
     7: "바닐라 저당콘",
